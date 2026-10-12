@@ -6,7 +6,7 @@ export const profile = {
   handle: "@notarkoroy",
   handleUrl: "https://x.com/notarkoroy",
   avatar: "https://avatars.githubusercontent.com/u/239588308?v=4",
-  role: "Blockchain Full Stack Developer",
+  role: "developer",
   hackathonWins: 16,
   location: "India",
   status: { text: "Open to new roles", url: "mailto:arkoroy302@gmail.com" },
@@ -19,7 +19,7 @@ export const profile = {
   resumeUrl: "/resume.pdf",
   githubRepo: "https://github.com/arko05roy",
   copyrightYear: 2026,
-  quote: "Code is like humor. When you have to explain it, it's bad.",
+  quote: "how bored can you be to spend time reading this?",
 };
 
 export const socials = [
