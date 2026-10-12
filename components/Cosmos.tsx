@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { pulse } from "@/lib/pulse";
 
 type Dot = { x: number; y: number; r: number; a: number; z: number; tw: number };
 type P = { x: number; y: number; r: number; a: number };
@@ -143,7 +144,25 @@ export default function Cosmos() {
       });
     };
 
+    // music: the galaxy orbits the current song — spins faster while playing, breathes with the bass
+    let spinA = 0, lastT = 0, eBass = 0, eLvl = 0, eOn = 0, coverRot = 0;
+
+    // smoothed spectrum, sampled by angle around the ring: lows at the left/right, highs top/bottom
+    const spec = new Float32Array(64);
+    const freq = (ang: number) => {
+      const u = Math.abs((((ang / 6.283) % 1) + 1) % 1 * 2 - 1); // 0..1..0 around the circle
+      return spec[Math.min(63, Math.floor(u * 64))];
+    };
+
     const draw = (t: number) => {
+      const dt = Math.min(64, t - lastT || 16); lastT = t;
+      pulse.read?.();
+      eOn += ((pulse.playing ? 1 : 0) - eOn) * .03;
+      eBass += (pulse.bass - eBass) * (pulse.bass > eBass ? .35 : .08);
+      eLvl += (pulse.level - eLvl) * .1;
+      spinA += dt / 26000 * (1 + eOn * 3 + eBass * 10);
+      coverRot += dt / 9000 * eOn;
+      for (let k = 0; k < 64; k++) spec[k] += (pulse.bins[k] - spec[k]) * (pulse.bins[k] > spec[k] ? .5 : .12);
       m.x += (m.tx - m.x) * .06; m.y += (m.ty - m.y) * .06;
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = "#ece6da";
@@ -161,19 +180,59 @@ export default function Cosmos() {
       // galaxy disc: tilted ellipse, fades and drifts up as you scroll away from the hero
       const fade = Math.max(0, 1 - sy / (h * .9));
       if (fade > 0) {
-        const R = Math.min(w * .42, 330), cx = w * .5 + m.x * 18, cy = h * .3 - sy * .5 + m.y * 18;
-        const tilt = .16 + m.y * .05, rot = -.12 + m.x * .06, spin = still ? 0 : t / 26000;
+        const R = Math.min(w * .42, 330) * (1 + eBass * .06), cx = w * .5 + m.x * 18, cy = h * .3 - sy * .5 + m.y * 18;
+        const tilt = .16 + m.y * .05, rot = -.12 + m.x * .06, spin = still ? 0 : spinA;
         const cr = Math.cos(rot), sr = Math.sin(rot);
         for (const p of disc) {
           const a = p.ang + spin * p.spd / (p.rad + .3);
           const ex = Math.cos(a) * p.rad * R, ey = (Math.sin(a) * p.rad * tilt + p.off) * R;
-          ctx.globalAlpha = p.a * fade * (p.rad < .2 ? 1 : .75);
-          ctx.beginPath(); ctx.arc(cx + ex * cr - ey * sr, cy + ex * sr + ey * cr, p.r, 0, 6.283); ctx.fill();
+          // the disc is the visualizer: each particle's angle picks a frequency band (mirrored so the
+          // ring is symmetric), and that band's energy pushes it outward
+          const kick = 1 + freq(a) * .22 * eOn * (.4 + p.rad);
+          ctx.globalAlpha = Math.min(1, p.a * fade * (p.rad < .2 ? 1 : .75) * (1 + eLvl * 1.2));
+          ctx.beginPath(); ctx.arc(cx + ex * kick * cr - ey * sr, cy + ex * kick * sr + ey * cr, p.r * (1 + eBass * .5), 0, 6.283); ctx.fill();
         }
-        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * .22);
+        const core = R * .22 * (1 + eBass * .45);
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, core);
         g.addColorStop(0, "#fffaf0"); g.addColorStop(.25, "#ece6da99"); g.addColorStop(1, "#ece6da00");
         ctx.globalAlpha = fade; ctx.fillStyle = g;
-        ctx.beginPath(); ctx.arc(cx, cy, R * .22, 0, 6.283); ctx.fill();
+        ctx.beginPath(); ctx.arc(cx, cy, core, 0, 6.283); ctx.fill();
+        // radial spectrum: stippled spokes around the core in the disc's tilted plane, the classic
+        // circular visualizer (polar bars) drawn as dots so it reads like the rest of the engraving
+        if (eOn > .01 && !still) {
+          const N = 96, base = R * .16, rings = [1, 1.9];
+          ctx.fillStyle = "#ece6da";
+          for (const ring of rings) {
+            for (let k = 0; k < N; k++) {
+              const ang = k / N * 6.283 + spin * (ring === 1 ? 1 : -.6);
+              const v = freq(ang), len = v * R * (ring === 1 ? .22 : .12);
+              const ca = Math.cos(ang), sa = Math.sin(ang);
+              for (let d = 0; d <= len; d += 3) {
+                const rr = base * ring + d, ex = ca * rr, ey = sa * rr * tilt;
+                ctx.globalAlpha = fade * eOn * (1 - d / (len + 1)) * (ring === 1 ? .85 : .5);
+                ctx.fillRect(cx + ex * cr - ey * sr - .6, cy + ex * sr + ey * cr - .6, 1.2, 1.2);
+              }
+            }
+          }
+          ctx.globalAlpha = 1;
+        }
+        // the song's album art sits in the eye of the galaxy, turning like a record
+        if (pulse.cover && eOn > .01) {
+          const r = R * .085 * (1 + eBass * .15);
+          ctx.save();
+          ctx.globalAlpha = fade * eOn;
+          ctx.translate(cx, cy); ctx.rotate(coverRot);
+          ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.283); ctx.clip();
+          ctx.filter = "grayscale(.35) contrast(1.1)";
+          ctx.drawImage(pulse.cover, -r, -r, r * 2, r * 2);
+          ctx.filter = "none";
+          ctx.globalAlpha = fade * eOn * .9; ctx.fillStyle = "#0b0d0e";
+          ctx.beginPath(); ctx.arc(0, 0, r * .12, 0, 6.283); ctx.fill();
+          ctx.restore();
+          ctx.globalAlpha = fade * eOn * (.35 + eBass * .5); ctx.strokeStyle = "#ece6da"; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.arc(cx, cy, r + 3, 0, 6.283); ctx.stroke();
+          ctx.fillStyle = "#ece6da";
+        }
         // vertical jet
         ctx.fillStyle = "#ece6da";
         for (let i = -60; i <= 60; i++) {

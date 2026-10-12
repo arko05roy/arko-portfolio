@@ -4,12 +4,16 @@ import LocalTime from "@/components/LocalTime";
 import Tally from "@/components/Tally";
 import Contributions from "@/components/Contributions";
 import Experience from "@/components/Experience";
+import SpotifyPlayer from "@/components/SpotifyPlayer";
+import { getPlaylist } from "@/lib/spotify";
 import { ProjectCard, SectionTitle } from "@/components/ui";
 import { achievements, communities, community, profile, projects, skills, skillIcons, socials } from "@/lib/data";
 
-export default function Home() {
+export default async function Home() {
   return (
     <>
+      <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("entered"))document.documentElement.dataset.entered="1"}catch(e){}` }} />
+      <SpotifyPlayer tracks={await getPlaylist()} />
       {/* Hero */}
       <section className="container">
         <div className="hero-profile enter" style={{ ["--i" as string]: 0 }}>
