@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Cormorant_Garamond, Figtree, JetBrains_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -12,10 +12,19 @@ const display = Bricolage_Grotesque({ variable: "--font-display", subsets: ["lat
 const serif = Cormorant_Garamond({ variable: "--font-serif", subsets: ["latin"], weight: ["500", "600"], style: ["normal", "italic"] });
 const mono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin"] });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://notarko.vercel.app";
+const title = `${profile.name} | ${profile.role}`;
+const description = `${profile.name} — ${profile.role} and ${profile.hackathonWins}× hackathon winner. Projects, experience, skills and contact.`;
+
 export const metadata: Metadata = {
-  title: `${profile.name} | ${profile.role}`,
-  description: `${profile.name} — ${profile.role}. Projects, experience, skills and contact.`,
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+  openGraph: { type: "website", url: "/", siteName: profile.name, title, description, locale: "en_US" },
+  twitter: { card: "summary_large_image", title, description, creator: profile.handle },
 };
+
+export const viewport: Viewport = { themeColor: "#0b0d0e" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
