@@ -103,6 +103,16 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    name: "Banchor",
+    logo: "/projects/banchor.png",
+    image: "/shots/banchor.png",
+    description: "Your attention span, tokenized: a Chrome extension and web app that turns doomscrolling into a stock portfolio on Monad. Scroll Instagram, own Meta; highlight “Nvidia”, own Nvidia. Then an AI roasts your portfolio.",
+    tech: ["Monad", "Passkeys", "Chrome extension", "TypeScript"],
+    award: "Monad Blitz Mumbai winner",
+    github: "https://github.com/arko05roy/banchor",
+    status: "live",
+  },
+  {
     name: "finity",
     logo: "/projects/finity.png",
     image: "/shots/finity-click.jpg",
