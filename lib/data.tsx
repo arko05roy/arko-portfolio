@@ -7,11 +7,11 @@ export const profile = {
   handleUrl: "https://x.com/notarkoroy",
   avatar: "https://avatars.githubusercontent.com/u/239588308?v=4",
   role: "developer",
-  hackathonWins: 16,
+  hackathonWins: 17,
   location: "India",
   status: { text: "Open to new roles", url: "mailto:arkoroy302@gmail.com" },
   bio: [
-    <><b>16× hackathon winner</b> and <Chip logo="/logos/ethglobal.png" href="https://ethglobal.com">ETHGlobal</Chip> bounty winner, plus a <Chip logo="/logos/colosseum.png" href="https://www.colosseum.com">Colosseum</Chip> track win</>,
+    <><b>17× hackathon winner</b> and <Chip logo="/logos/ethglobal.png" href="https://ethglobal.com">ETHGlobal</Chip> bounty winner, plus a <Chip logo="/logos/colosseum.png" href="https://www.colosseum.com">Colosseum</Chip> track win</>,
     <><Chip logo="/logos/stellar.png" href="https://stellar.org">Stellar</Chip> <b>ambassador</b> for India</>,
     <>Frontend mentor at <Chip logo="/logos/gdg.png" href="https://gdg.community.dev">GDG HITK</Chip></>,
   ],

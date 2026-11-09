@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-export const alt = "Arko Roy — developer, 16× hackathon winner";
+export const alt = "Arko Roy — developer, 17× hackathon winner";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -37,7 +37,7 @@ export default async function Image() {
             Open to new roles
           </div>
           <div style={{ fontSize: 96, fontWeight: 800, letterSpacing: -3, lineHeight: 1 }}>Arko Roy</div>
-          <div style={{ fontSize: 38, color: "#b3b3b3" }}>Developer · 16× hackathon winner</div>
+          <div style={{ fontSize: 38, color: "#b3b3b3" }}>Developer · 17× hackathon winner</div>
           <div style={{ fontSize: 28, color: "#8c8c8c", marginTop: 16 }}>notarko.vercel.app</div>
         </div>
       </div>
