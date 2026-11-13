@@ -105,7 +105,7 @@ export const projects: Project[] = [
   {
     name: "Banchor",
     logo: "/projects/banchor.png",
-    image: "/shots/banchor.png",
+    image: "/shots/banchor-vercel-app.jpg",
     description: "Your attention span, tokenized: a Chrome extension and web app that turns doomscrolling into a stock portfolio on Monad. Scroll Instagram, own Meta; highlight “Nvidia”, own Nvidia. Then an AI roasts your portfolio.",
     tech: ["Monad", "Passkeys", "Chrome extension", "TypeScript"],
     award: "Monad Blitz Mumbai winner",
