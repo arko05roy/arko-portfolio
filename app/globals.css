@@ -675,6 +675,11 @@ main > * { transform: skewY(calc(var(--vel, 0) * -.6deg)); transition: transform
 .np-btn:disabled { opacity: .35; pointer-events: none; }
 /* stippled rule along the bottom edge, filled in bone as the song plays */
 .np-bar { position: absolute; left: 16px; right: 16px; bottom: 5px; height: 2px; background: radial-gradient(circle, #ece6da40 .8px, transparent 1px) 0 0 / 6px 2px; }
+.np-bar { cursor: pointer; touch-action: none; transition: height .2s, bottom .2s; }
+.np-bar::before { content: ""; position: absolute; inset: -8px 0; }
+.np-card:hover .np-bar, .np-bar:focus-visible { height: 3px; bottom: 4px; outline: none; }
+.np-bar:focus-visible { box-shadow: 0 0 0 1px #ece6da55; }
+.np-dur { opacity: .6; }
 .np-bar span { display: block; height: 100%; background: radial-gradient(circle, var(--bone) .8px, transparent 1px) 0 0 / 6px 2px; transform-origin: left; transition: transform .25s linear; }
 @keyframes np-eq { from { height: 2px; } to { height: 8px; } }
 @media (max-width: 520px) { .np-time { display: none; } .np-title { font-size: 1.05rem; } }
