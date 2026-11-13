@@ -35,13 +35,15 @@ export default function SpotifyPlayer({ tracks }: { tracks: Track[] }) {
   useEffect(() => {
     const a = audio.current;
     if (!a) return;
-    const events = ["pointerdown", "keydown", "touchend"];
+    // pointerdown is NOT a user activation for touch in Chrome, so unlock on events that are;
+    // only stop listening once sound actually starts, so a refused attempt can retry next gesture.
+    const events = ["pointerup", "click", "keydown", "touchend"];
     const start = (e: Event) => {
       // even if autoplay already worked, the visualizer can only be wired up inside a gesture
       connect();
-      off();
-      if (card.current?.contains(e.target as Node)) return; // the widget's own button handles play
-      a.play().catch(() => {});
+      if (card.current?.contains(e.target as Node)) { off(); return; } // the widget's own button handles play
+      if (!a.paused) { off(); return; }
+      a.play().then(off, () => {});
     };
     const off = () => events.forEach((ev) => removeEventListener(ev, start, true));
     events.forEach((ev) => addEventListener(ev, start, true));
@@ -109,7 +111,11 @@ export default function SpotifyPlayer({ tracks }: { tracks: Track[] }) {
           src={track.preview}
           preload="auto"
           crossOrigin="anonymous"
-          onPlay={() => { pulse.playing = true; setPlaying(true); }}
+          onPlay={() => {
+            // once routed through Web Audio, a suspended context means silent playback
+            graph.current?.ctx.resume().catch(() => {});
+            pulse.playing = true; setPlaying(true);
+          }}
           onPause={() => { pulse.playing = false; setPlaying(false); }}
           onEnded={next}
           onError={next}
