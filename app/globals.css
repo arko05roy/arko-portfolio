@@ -267,10 +267,10 @@ h1, h2, .project-name { font-family: var(--font-display), var(--font-sans), sans
 /* tally signature */
 .wins { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 26px; }
 .tally { display: flex; gap: 10px; color: var(--text); }
-.tally path { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 60; stroke-dashoffset: 60;
-  animation: draw .35s var(--ease-out) forwards; animation-delay: calc(400ms + var(--d) * 70ms); }
+.tally path { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0;
+  animation: draw .35s var(--ease-out) backwards; animation-delay: calc(400ms + var(--d) * 70ms); }
 .tally .strike { stroke: var(--magenta, #ff3f9a); }
-@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 .tally svg { transition: transform .3s var(--ease-spring); }
 .tally svg:hover { transform: rotate(-6deg) translateY(-2px); }
 .wins-label { font-size: .75rem; color: var(--dim); }
@@ -293,7 +293,6 @@ h1, h2, .project-name { font-family: var(--font-display), var(--font-sans), sans
 
 @media (prefers-reduced-motion: reduce) {
   .enter, .tally path, .timeline-dot.present::after, .copy.done .copy-label { animation: none; }
-  .tally path { stroke-dashoffset: 0; }
   [data-reveal] { opacity: 1; transform: none; transition: none; }
   .nav-pill, .progress { transition: none; }
 }

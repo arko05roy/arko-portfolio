@@ -9,9 +9,9 @@ export default function Tally({ count }: { count: number }) {
           {Array.from({ length: size }, (_, i) => {
             const d = n++;
             return i < 4 ? (
-              <path key={i} d={`M${6 + i * 9} ${4 + (i % 2)} L${5 + i * 9} ${30 - (i % 2)}`} style={{ ["--d" as string]: d }} />
+              <path key={i} pathLength={1} d={`M${6 + i * 9} ${4 + (i % 2)} L${5 + i * 9} ${30 - (i % 2)}`} style={{ ["--d" as string]: d }} />
             ) : (
-              <path key={i} d="M1 26 L44 8" className="strike" style={{ ["--d" as string]: d }} />
+              <path key={i} pathLength={1} d="M1 26 L44 8" className="strike" style={{ ["--d" as string]: d }} />
             );
           })}
         </svg>
